@@ -1,0 +1,65 @@
+/// correct a value to fit within a lo and high value
+@function fittorange($v, $lo:0, $hi:100) {
+	@return if($v > $hi, $hi, if($v < $lo, $lo, $v));
+}
+
+/// provide an hsl variation on the basehue, "optimized" for changing lightness+saturation and shifting hue
+@function basecolor($l:50, $s:75, $a:1, $h:0, $base:$basecolor) {
+	@return hsla(
+		hue($base) + (180 * $h)	// "rotate" by factor for complementary; could also use complement()
+		, fittorange($s)
+		, fittorange($l)
+		, fittorange($a, $hi:1)
+		);
+}
+
+// edit for whichever you care about
+$vendors: 'webkit', 'moz', 'ms', 'o', 'khtml';
+// http://css-tricks.com/redesigning-with-sass/ for references
+@mixin vendorize($property, $value) {
+	@each $vendor in $vendors {
+		-#{$vendor}-#{$property}: $value;
+	}
+	#{$property}: $value;
+}
+
+/// rounded borders
+@mixin rounded($radius:10px) {
+	@include vendorize(border-radius, $radius);
+}
+
+/// standard offset background shadow
+@mixin boxshadow($radius:5px, $spread:5px, $hoffset:5px, $voffset:5px, $color: #ccc){
+	@include vendorize(box-shadow, $hoffset $voffset $radius $spread $color);
+}
+
+/// fit background
+@mixin background-size($size:100% auto){
+	@include vendorize(background-size, $size);
+}
+
+.aria-hidden {
+	/// visible hide, still read by screenreaders...
+	/// @usage: myselector { @extend .aria-hidden }
+	position:absolute; left:-9999px;
+}
+
+.tooltip {
+	position:relative; // for the absolute positioning of the pseudoelement
+
+	&:hover:after {
+		content: attr(data-title); //if you use regular title, browser may also overlay its own tooltip
+		display:inline-block; width:30em;
+		position:absolute; left:50%; top:100%;
+		z-index:9999;
+		// so it's visible over underlying elements
+		background-color:white; color:black;
+		border:1px solid black; padding:0.5em; // style this in your site
+	}
+}
+
+.clearfix:after {
+	content:"";
+	clear:both;
+	display:block; height:1px; margin-top:-1px;
+}
