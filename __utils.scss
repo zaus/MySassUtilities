@@ -14,14 +14,31 @@
 }
 
 // edit for whichever you care about
-$vendors: 'webkit', 'moz', 'ms', 'o', 'khtml';
+$vendors: 'webkit', 'moz', 'ms'; // 'webkit', 'moz', 'ms', 'o', 'khtml';
 // http://css-tricks.com/redesigning-with-sass/ for references
-@mixin vendorize($property, $value) {
+@mixin vendorize($property, $value, $prefix:'') {
 	@each $vendor in $vendors {
-		-#{$vendor}-#{$property}: $value;
+		#{$prefix}-#{$vendor}-#{$property}: $value;
 	}
 	#{$property}: $value;
 }
+
+/// prefix-free keyframes: https://github.com/thoughtbot/bourbon/issues/98#issuecomment-6290998
+@mixin keyframes($name) {
+  @-moz-keyframes #{$name} { @content; }
+  @-webkit-keyframes #{$name} { @content; }
+  @-ms-keyframes #{$name} { @content; }
+//  @-o-keyframes #{$name} { @content; }
+//  @-khtml-keyframes #{$name} { @content; }
+  @keyframes #{$name} { @content; }
+}
+// prefix-free keyframes http://stackoverflow.com/questions/10372717/how-to-create-a-keyframes-mixin-in-scss-3-1-16
+// @mixin keyframes($name) {
+// 	@each $vendor in $vendors{
+// 		#{'@'}-#{$vendor}-keyframes #{$name} { @content; }
+// 	}
+// 	@keyframes #{$name} { @content; }
+// }
 
 /// rounded borders
 @mixin rounded($radius:10px) {
@@ -63,3 +80,30 @@ $vendors: 'webkit', 'moz', 'ms', 'o', 'khtml';
 	clear:both;
 	display:block; height:1px; margin-top:-1px;
 }
+
+
+//#region --------------- tips --------------
+
+// hash/map/dictionary interpolation - see https://coderwall.com/p/9tjhfq
+
+//			$list: 'first', 'second', 'fourth';
+//			$colors: red blue green brown;
+//			
+//			@each $item in $list {
+//				$i: index($list, $item);
+//				.#{$item}-each {
+//					color: nth($colors, $i);
+//				}
+//				.btn-each-#{$i} { color: red; }
+//			}
+//			
+//			@for $i from 1 through length($list) {
+//				$item: nth($list, $i);
+//				
+//				.#{$item}-for {
+//					color: nth($colors, $i);
+//				}
+//				.btn-for-#{$i} { color: blue; }
+//			}
+
+//#endregion ------------------ tips -------------
